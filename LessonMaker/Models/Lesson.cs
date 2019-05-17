@@ -7,15 +7,17 @@ namespace LessonMaker.Models
 {
     public class Lesson
     {
-        private int Id;
+        private int ID { get; set; }
 
-        private String Title;
+        private string Title { get; set; }
 
-        private String Content;
+        private string Body { get; set; }
 
-        private int Votes;
+        private string Author { get; set; }
 
-        private DateTime CreationDate;
+        private int Votes { get; set; }
+
+        private DateTime CreationDate { get; set; }
 
     }
 }
