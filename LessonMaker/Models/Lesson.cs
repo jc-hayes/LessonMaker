@@ -2,22 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
-namespace LessonMaker.Models
+namespace LessonsMaker.Models
 {
     public class Lesson
     {
-        private int ID { get; set; }
+        public int ID { get; set; }
 
-        private string Title { get; set; }
+        public string Title { get; set; }
 
-        private string Body { get; set; }
+        public string Body { get; set; }
 
-        private string Author { get; set; }
+        public string Author { get; set; }
 
-        private int Votes { get; set; }
+        public int Votes { get; set; }
 
-        private DateTime CreationDate { get; set; }
+        public DateTime CreationDate { get; set; }
+
 
     }
 }
