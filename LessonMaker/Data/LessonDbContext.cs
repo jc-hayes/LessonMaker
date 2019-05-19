@@ -4,29 +4,29 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.EntityFrameworkCore.Extensions;
+using MySql.Data.MySqlClient;
 using LessonsMaker.Models;
 
 namespace LessonMaker.Data
 {
-    public class LessonDbContext : DbContext
+    public class LessonDbContext : DbContext, IDisposable
     {
-        private static LessonDbContext Instance;
+        private static LessonDbContext instance;
+        public DbSet<Lesson> Lessons { get; set; }
 
         private LessonDbContext()
         {
-            Console.WriteLine("Db Instance Created");
         }
 
         public static LessonDbContext GetContext()
         {
-            if (Instance == null)
+            if (instance == null)
             {
-                Instance = new LessonDbContext();
+                instance = new LessonDbContext();
             }
-            return Instance;
+            return instance;
         }
 
-        public DbSet<Lesson> Lessons { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
