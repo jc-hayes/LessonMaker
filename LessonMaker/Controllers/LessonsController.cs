@@ -13,22 +13,22 @@ namespace LessonsMaker.Controllers
     //[Route("api/lesson")]
     public class LessonsController : Controller
     {
-        LessonDbContext _context = LessonDbContext.GetContext();
+        LessonDbContext _context = LessonDbContext.GetInstance();
 
         /// <summary>
-        /// This GET method returns all the Lesson entities in the database and orders them by their Vote count
+        /// This GET method returns all the Lesson entities in the database and orders them by their Vote count.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [Route("api/lessons")]
         public IEnumerable<Lesson> Get()
-        { 
+        {
             // Return all the Lessons in the Db ordered by their Votes
             return _context.Lessons.OrderByDescending(lesson => lesson.Votes);
         }
 
         /// <summary>
-        /// This GET method returns a Lesson entity that matches the ID parameter
+        /// This GET method returns a Lesson entity that matches the ID parameter.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -37,11 +37,11 @@ namespace LessonsMaker.Controllers
         public Lesson Lesson(int id)
         {
             // Return the lesson with the specific ID
-            return _context.Lessons.Single(lesson=> lesson.ID == id);
+            return _context.Lessons.Single(lesson => lesson.ID == id);
         }
 
         /// <summary>
-        /// This POST method adds and saves a new Lesson entity to the database
+        /// This POST method adds and saves a new Lesson entity to the database.
         /// </summary>
         /// <param name="title"></param>
         /// <param name="body"></param>
@@ -51,24 +51,64 @@ namespace LessonsMaker.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("api/lesson/post")]
-        public IActionResult Post([FromForm] string title, [FromForm] string body, [FromForm] string author, [FromForm] DateTime creationDate, [FromForm] int votes)
+        public IActionResult Post([FromForm] string title, [FromForm] string body, [FromForm] string author)
         {
 
             // Initialized the new lesson
             Lesson mLesson = new Lesson
             {
                 Title = title,
-                Body = body,
+                Content = body,
                 Author = author,
-                CreationDate = creationDate,
-                Votes = votes
+                CreationDate = DateTime.Now,
+                Votes = 0
             };
-
             // Add and save the new lesson to the Db
             _context.Lessons.Add(mLesson);
             _context.SaveChanges();
 
-            return Ok(mLesson.ToString());
+            return Ok(mLesson);
         }
-    }   
+
+        /// <summary>
+        /// This PUT method increments the specified Lesson entity, Vote property, by 1.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("api/upvote/{id}")]
+        public IActionResult UpVote(int id)
+        {
+            Lesson mLesson = _context.Lessons.Find(id);
+            if (mLesson != null)
+            {
+                mLesson.Votes += 1;
+
+                _context.Update(mLesson);
+                _context.SaveChanges();
+            }
+            return Ok(mLesson);
+        }
+
+        /// <summary>
+        /// This PUT method decrments the specified Lesson entity, Vote property, by 1.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("api/downvote/{id}")]
+        public IActionResult DownVote(int id)
+        {
+            Lesson mLesson = _context.Lessons.Find(id);
+            if (mLesson != null)
+            {
+                mLesson.Votes -= 1;
+
+                _context.Update(mLesson);
+                _context.SaveChanges();
+
+            }
+            return Ok(mLesson);
+        }
+    }
 }

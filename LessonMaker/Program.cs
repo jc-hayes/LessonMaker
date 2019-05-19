@@ -19,8 +19,13 @@ namespace LessonsMaker
         public static void Main(string[] args)
         {
             BuildWebHost(args).Run();
+            DoThis();
 
-            using (var context = LessonDbContext.GetContext())
+        }
+
+        private static void DoThis()
+        {
+            using (var context = LessonDbContext.GetInstance())
             {
                 // Create the database if it does not exist
                 context.Database.EnsureCreated();

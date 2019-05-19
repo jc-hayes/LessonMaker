@@ -26,7 +26,10 @@ namespace LessonsMaker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+            services.AddDbContext<LessonDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
             services.AddMvc();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
