@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.EntityFrameworkCore.Extensions;
 using LessonMaker.Data;
+using Newtonsoft.Json;
 
 namespace LessonsMaker
 {
@@ -27,10 +28,12 @@ namespace LessonsMaker
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddDbContext<LessonDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<LessonDbContext>(options => 
+                options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddMvc();
 
-        }
+        }   
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -40,7 +43,12 @@ namespace LessonsMaker
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Index}/{action=Index}/{id?}");
+            });
         }
     }
 }

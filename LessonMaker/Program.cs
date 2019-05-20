@@ -19,11 +19,11 @@ namespace LessonsMaker
         public static void Main(string[] args)
         {
             BuildWebHost(args).Run();
-            DoThis();
+            BuildDb();
 
         }
 
-        private static void DoThis()
+        private static void BuildDb()
         {
             using (var context = LessonDbContext.GetInstance())
             {
