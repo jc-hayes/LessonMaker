@@ -34,10 +34,18 @@ namespace LessonsMaker.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("api/lesson/{id}")]
-        public Lesson Lesson(int id)
+        public IActionResult Lesson(int id)
         {
-            // Return the lesson with the specific ID
-            return _context.Lessons.Single(lesson => lesson.ID == id);
+            try
+            {
+                // Return the lesson with the specific id
+                Lesson mLesson = _context.Lessons.Find(id);
+                return Ok(mLesson);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(400, $"Exception: {e}");
+            }
         }
 
         /// <summary>
@@ -109,6 +117,27 @@ namespace LessonsMaker.Controllers
 
             }
             return Ok(mLesson);
+        }
+
+        /// <summary>
+        /// This DELETE method removes the specified Lesson entity from the database.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("api/delete/{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                Lesson mLesson = _context.Lessons.Find(id);
+                _context.Lessons.Remove(mLesson);
+                return Ok($"Lesson #{id} removed");
+            }
+            catch (Exception e)
+            {
+                return StatusCode(400,e);
+            }
         }
     }
 }

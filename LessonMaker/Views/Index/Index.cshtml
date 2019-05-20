@@ -1,40 +1,34 @@
 ﻿
 @model IEnumerable<LessonsMaker.Models.Lesson>
 
-@{
-    ViewData["Title"] = "Index";
-}
-
 <h2>Lesson List</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    @Html.ActionLink("Create New Lesson", "Create", new { })
 </p>
 <table class="table">
     <thead>
         <tr>
-                <th>
-                    Lesson Title
-                </th>
-            <th>Lesson Author</th>
+            <th>
+                Lesson Title
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Author)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.ActionLink("Upvote", "upvote", "api", new { id=item.ID }) |
+                    @Html.ActionLink("Downvote", "downvote", "api", new { id = item.ID }) |
+                    @Html.ActionLink("Details", "lesson", "api", new { id = item.ID }) |
+                    @Html.ActionLink("Delete", "delete", "api", new { id = item.ID })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
