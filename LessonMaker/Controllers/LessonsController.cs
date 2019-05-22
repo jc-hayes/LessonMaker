@@ -4,42 +4,59 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using LessonsMaker.Models;
 using LessonMaker.Data;
+using Microsoft.EntityFrameworkCore.Update;
 
 namespace LessonsMaker.Controllers
 {
     [Produces("application/json")]
-    //[Route("api/lesson")]
+    [Route("api")]
     public class LessonsController : Controller
     {
         LessonDbContext _context = LessonDbContext.GetInstance();
 
         /// <summary>
-        /// This GET method returns all the Lesson entities in the database and orders them by their Vote count.
+        /// GET: api/lessons - Returns all the Lesson entities in the database.
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
-        [Route("api/lessons")]
-        public IEnumerable<Lesson> Get()
+        [HttpGet("lessons")]
+        public async Task<IEnumerable<Lesson>> GetLessonsAsync()
         {
             // Return all the Lessons in the Db ordered by their Votes
-            return _context.Lessons.OrderByDescending(lesson => lesson.Votes);
+            return await _context.Lessons.OrderByDescending(lesson => lesson.Votes).ToListAsync();
+        }
+
+        /// <summary>
+        /// GET: api/featured-lessons - Returns all the lessons with a vote count 10 or greater.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("featured-lessons")]
+        public async Task<IEnumerable<Lesson>> GetFeaturedLessonsAsync()
+        {
+            // Return all the Lessons in the Db ordered by their Votes & where votes is 10 or greater
+            return await _context.Lessons.OrderByDescending(lesson => lesson.Votes).
+                Where(lesson => lesson.Votes >= 10).ToListAsync();
         }
 
         /// <summary>
         /// This GET method returns a Lesson entity that matches the ID parameter.
+        /// GET: api/lesson/{id}
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet]
-        [Route("api/lesson/{id}")]
-        public IActionResult Lesson(int id)
+        [HttpGet("lesson/{id}")]
+        public async Task<IActionResult> GetLesson(long id)
         {
             try
             {
-                // Return the lesson with the specific id
-                Lesson mLesson = _context.Lessons.Find(id);
+                // Find the lesson with the specific id
+                Lesson mLesson = await _context.Lessons.FindAsync(id);
+                if (mLesson == null)
+                {
+                    return NotFound();
+                }
                 return Ok(mLesson);
             }
             catch (Exception e)
@@ -49,95 +66,124 @@ namespace LessonsMaker.Controllers
         }
 
         /// <summary>
-        /// This POST method adds and saves a new Lesson entity to the database.
+        /// POST: api/lesson/post - Adds and saves a new Lesson entity to the database.
         /// </summary>
-        /// <param name="title"></param>
-        /// <param name="body"></param>
-        /// <param name="author"></param>
-        /// <param name="creationDate"></param>
-        /// <param name="votes"></param>
+        /// <param name="lesson"></param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("api/lesson/post")]
-        public IActionResult Post([FromForm] string title, [FromForm] string body, [FromForm] string author)
+        [HttpPost("lesson/post")]
+        public async Task<IActionResult> PostLesson([FromBody] Lesson lesson)
         {
+            lesson.CreationDate = DateTime.Today;
+            _context.Lessons.Add(lesson);
+            await _context.SaveChangesAsync();
 
-            // Initialized the new lesson
-            Lesson mLesson = new Lesson
-            {
-                Title = title,
-                Content = body,
-                Author = author,
-                CreationDate = DateTime.Now,
-                Votes = 0
-            };
-            // Add and save the new lesson to the Db
-            _context.Lessons.Add(mLesson);
-            _context.SaveChanges();
-
-            return Ok(mLesson);
+            return CreatedAtAction(nameof(GetLesson), new { id = lesson.ID }, lesson);
         }
 
         /// <summary>
-        /// This PUT method increments the specified Lesson entity, Vote property, by 1.
+        /// PUT: api/upvote/1 - Increments the vote of a lesson with {id} parameter
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="lesson"></param>
         /// <returns></returns>
-        [HttpPut]
-        [Route("api/upvote/{id}")]
-        public IActionResult UpVote(int id)
+        [HttpPut("upvote/{id}")]
+        public async Task<IActionResult> UpvoteLesson(long id)
         {
-            Lesson mLesson = _context.Lessons.Find(id);
-            if (mLesson != null)
+            Lesson mLesson = await _context.Lessons.FindAsync(id);
+            if (mLesson == null)
             {
-                mLesson.Votes += 1;
-
-                _context.Update(mLesson);
-                _context.SaveChanges();
+                return NotFound();
             }
-            return Ok(mLesson);
+            mLesson.Votes += 1;
+            _context.Entry(mLesson).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
+
         /// <summary>
-        /// This PUT method decrments the specified Lesson entity, Vote property, by 1.
+        /// PUT: api/downvote/1 - Decrements the vote of a lesson with {id} parameter
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="lesson"></param>
         /// <returns></returns>
-        [HttpPut]
-        [Route("api/downvote/{id}")]
-        public IActionResult DownVote(int id)
+        [HttpPut("downvote/{id}")]
+        public async Task<IActionResult> DownvoteLeson(long id)
         {
-            Lesson mLesson = _context.Lessons.Find(id);
-            if (mLesson != null)
+            Lesson mLesson = await _context.Lessons.FindAsync(id);
+            if (mLesson == null)
+            {
+                return NotFound();
+            }
+            if (mLesson.Votes == -2)
+            {
+                _context.Lessons.Remove(mLesson);
+            }
+            else
             {
                 mLesson.Votes -= 1;
-
-                _context.Update(mLesson);
-                _context.SaveChanges();
-
+                _context.Entry(mLesson).State = EntityState.Modified;
             }
-            return Ok(mLesson);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         /// <summary>
-        /// This DELETE method removes the specified Lesson entity from the database.
+        /// PUT: api/lesson/3 - Update a lesson with {id} parameter
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="lesson"></param>
         /// <returns></returns>
-        [HttpDelete]
-        [Route("api/delete/{id}")]
-        public IActionResult Delete(int id)
+        [HttpPut("lesson/{id}")]
+        public async Task<IActionResult> EditLesson(long id, [FromBody] Lesson lesson)
         {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            if (id != lesson.ID)
+                return BadRequest();
             try
             {
-                Lesson mLesson = _context.Lessons.Find(id);
-                _context.Lessons.Remove(mLesson);
-                return Ok($"Lesson #{id} removed");
+                var entity = await _context.Lessons.FindAsync(id);
+
+                _context.Entry(lesson).State = EntityState.Detached;
+
+                entity.Title = lesson.Title;
+                entity.Content = lesson.Content;
+                entity.Author = lesson.Author;
+                
+                _context.Entry(entity).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
             catch (Exception e)
             {
-                return StatusCode(400,e);
+                return StatusCode(500, $"{e.Message}");
             }
+        }
+
+        /// <summary>
+        /// DELETE: api/delete/1 - Remove a Lesson with {id} parameter
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteLesson(long id)
+        {
+            var lesson = await _context.Lessons.FindAsync(id);
+
+            if (lesson == null)
+            {
+                return NotFound();
+            }
+
+            _context.Lessons.Remove(lesson);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

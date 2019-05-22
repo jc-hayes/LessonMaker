@@ -28,8 +28,14 @@ namespace LessonsMaker
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddDbContext<LessonDbContext>(options => 
-                options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
+
+            //var options = new DbContextOptionsBuilder<LessonDbContext>()
+            //                .UseMySQL(Configuration.GetConnectionString("DefaultConnection"))
+            //                .EnableSensitiveDataLogging()
+            //                .Options;
+            //services.AddSingleton(options);
+
+            //services.AddDbContext<LessonDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddMvc();
 
@@ -47,8 +53,10 @@ namespace LessonsMaker
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Index}/{action=Index}/{id?}");
+                    template: "{controller=Lesson}/{action=Lessons}/{id?}");
             });
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
         }
     }
 }

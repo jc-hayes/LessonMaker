@@ -7,6 +7,7 @@ using MySql.Data.EntityFrameworkCore.Extensions;
 using MySql.Data.MySqlClient;
 using LessonsMaker.Models;
 
+
 namespace LessonMaker.Data
 {
     public class LessonDbContext : DbContext
@@ -14,18 +15,18 @@ namespace LessonMaker.Data
         private static LessonDbContext instance;
         public DbSet<Lesson> Lessons { get; set; }
 
-        private LessonDbContext()
+        public LessonDbContext()
         {
         }
 
-        private LessonDbContext(DbContextOptions<LessonDbContext> context)
+        private LessonDbContext(DbContextOptions<LessonDbContext> context) :base (context)
         {
-
+            
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySQL("server=localhost;port=3306;database=bit350;user=root;password=mypassword");
+            optionsBuilder.UseMySQL("server=localhost;port=3306;database=bit350;user=root;password=mypassword").EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -18,18 +18,15 @@ namespace LessonsMaker
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
             BuildDb();
-
+            BuildWebHost(args).Run();
         }
 
         private static void BuildDb()
         {
-            using (var context = LessonDbContext.GetInstance())
-            {
-                // Create the database if it does not exist
-                context.Database.EnsureCreated();
-            }
+            var context = LessonDbContext.GetInstance();
+            // Create the database if it does not exist
+            context.Database.EnsureCreated();
         }
 
         public static IWebHost BuildWebHost(string[] args) =>

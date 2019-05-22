@@ -23,9 +23,9 @@
                     @Html.DisplayFor(modelItem => item.Title)
                 </td>
                 <td>
-                    @Html.ActionLink("Upvote", "upvote", "api", new { id=item.ID }) |
-                    @Html.ActionLink("Downvote", "downvote", "api", new { id = item.ID }) |
-                    @Html.ActionLink("Details", "lesson", "api", new { id = item.ID }) |
+                    @Html.ActionLink("Upvote", "upvote", "apilesson", new { id=item.ID }) |
+                    @Html.ActionLink("Downvote", "downvote", "api/lesson", new { id = item.ID }) |
+                    @Html.ActionLink("Details", "lesson", "api",  new { id = item.ID }) |
                     @Html.ActionLink("Delete", "delete", "api", new { id = item.ID })
                 </td>
             </tr>
