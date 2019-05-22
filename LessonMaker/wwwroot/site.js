@@ -11,10 +11,10 @@ let featuredLessons = null;
 
 function getCount(data) {
     const el = $("#counter");
-    let name = "lesson";
+    let name = "Lesson";
     if (data) {
         if (data > 1) {
-            name = "lessons";
+            name = "Lessons";
         }
         el.text(data + " " + name);
     } else {
@@ -24,10 +24,10 @@ function getCount(data) {
 
 function getFeaturedCount(featuredData) {
     const ef = $("#counter-featured");
-    let name = "lesson";
+    let name = "Lesson";
     if (featuredData) {
         if (featuredData > 1) {
-            name = "lessons";
+            name = "Lessons";
         }
         ef.text(featuredData + " " + name);
     } else {
