@@ -73,7 +73,8 @@ namespace LessonsMaker.Controllers
         [HttpPost("lesson/post")]
         public async Task<IActionResult> PostLesson([FromBody] Lesson lesson)
         {
-            lesson.CreationDate = DateTime.Today;
+            lesson.CreationDate = DateTime.Today.Date;
+
             _context.Lessons.Add(lesson);
             await _context.SaveChangesAsync();
 
@@ -111,23 +112,28 @@ namespace LessonsMaker.Controllers
         [HttpPut("downvote/{id}")]
         public async Task<IActionResult> DownvoteLeson(long id)
         {
-            Lesson mLesson = await _context.Lessons.FindAsync(id);
-            if (mLesson == null)
+            try
             {
-                return NotFound();
-            }
-            if (mLesson.Votes == -2)
-            {
-                _context.Lessons.Remove(mLesson);
-            }
-            else
-            {
-                mLesson.Votes -= 1;
-                _context.Entry(mLesson).State = EntityState.Modified;
-            }
-            await _context.SaveChangesAsync();
+                Lesson mLesson = await _context.Lessons.FindAsync(id);
 
-            return NoContent();
+                if (mLesson == null)
+                    return NotFound();
+                
+                if (mLesson.Votes == -2)
+                    _context.Lessons.Remove(mLesson);
+                else
+                {
+                    mLesson.Votes -= 1;
+                    _context.Entry(mLesson).State = EntityState.Modified;
+                }
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, $"{e.Message}");
+            }
         }
 
         /// <summary>
@@ -139,13 +145,14 @@ namespace LessonsMaker.Controllers
         [HttpPut("lesson/{id}")]
         public async Task<IActionResult> EditLesson(long id, [FromBody] Lesson lesson)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
-
-            if (id != lesson.ID)
-                return BadRequest();
             try
             {
+                if (!ModelState.IsValid)
+                    return BadRequest();
+
+                if (id != lesson.ID)
+                    return BadRequest();
+
                 var entity = await _context.Lessons.FindAsync(id);
 
                 _context.Entry(lesson).State = EntityState.Detached;
@@ -173,17 +180,21 @@ namespace LessonsMaker.Controllers
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteLesson(long id)
         {
-            var lesson = await _context.Lessons.FindAsync(id);
-
-            if (lesson == null)
+            try
             {
-                return NotFound();
+                var lesson = await _context.Lessons.FindAsync(id);
+
+                if (lesson == null)
+                    return NotFound();
+
+                _context.Lessons.Remove(lesson);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            } catch(Exception e)
+            {
+                return StatusCode(500, $"{e.Message}");
             }
-
-            _context.Lessons.Remove(lesson);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
     }
 }

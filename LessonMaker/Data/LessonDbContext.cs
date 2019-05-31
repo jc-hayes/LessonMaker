@@ -13,9 +13,11 @@ namespace LessonMaker.Data
     public class LessonDbContext : DbContext
     {
         private static LessonDbContext instance;
+        private static readonly String connectionString = "server=localhost;port=3306;database=bit350;user=root;password=mypassword";
+
         public DbSet<Lesson> Lessons { get; set; }
 
-        public LessonDbContext()
+        private LessonDbContext()
         {
         }
 
@@ -24,9 +26,22 @@ namespace LessonMaker.Data
             
         }
 
+        public static LessonDbContext GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new LessonDbContext();
+            }
+            return instance;
+        }
+        public static String GetConnectionString()
+        {
+            return connectionString;
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySQL("server=localhost;port=3306;database=bit350;user=root;password=mypassword").EnableSensitiveDataLogging();
+            optionsBuilder.UseMySQL(GetConnectionString()).EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,15 +53,6 @@ namespace LessonMaker.Data
                 entity.HasKey(e => e.ID);
                 entity.Property(e => e.Title).IsRequired();
             });
-        }
-
-        public static LessonDbContext GetInstance()
-        {
-            if (instance == null)
-            {
-                instance = new LessonDbContext();
-            }
-            return instance;
         }
     }
 }
