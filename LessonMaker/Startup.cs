@@ -8,8 +8,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using MySql.Data.EntityFrameworkCore.Extensions;
+using LessonMaker.Data;
+using Newtonsoft.Json;
 
-namespace LessonMaker
+namespace LessonsMaker
 {
     public class Startup
     {
@@ -23,8 +27,19 @@ namespace LessonMaker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
+            //var options = new DbContextOptionsBuilder<LessonDbContext>()
+            //                .UseMySQL(Configuration.GetConnectionString("DefaultConnection"))
+            //                .EnableSensitiveDataLogging()
+            //                .Options;
+            //services.AddSingleton(options);
+
+            //services.AddDbContext<LessonDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddMvc();
-        }
+
+        }   
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -34,7 +49,14 @@ namespace LessonMaker
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Lesson}/{action=Lessons}/{id?}");
+            });
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
         }
     }
 }

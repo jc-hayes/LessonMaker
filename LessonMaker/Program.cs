@@ -7,14 +7,26 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using LessonMaker.Data;
+using LessonsMaker.Models;
+using System.Text;
 
-namespace LessonMaker
+namespace LessonsMaker
 {
     public class Program
     {
         public static void Main(string[] args)
         {
+            BuildDb();
             BuildWebHost(args).Run();
+        }
+
+        private static void BuildDb()
+        {
+            var context = LessonDbContext.GetInstance();
+            // Create the database if it does not exist
+            context.Database.EnsureCreated();
         }
 
         public static IWebHost BuildWebHost(string[] args) =>

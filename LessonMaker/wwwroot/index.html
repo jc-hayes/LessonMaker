@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson CRUD</title>
+    <style>
+        input[type='submit'], button, [aria-label] {
+            cursor: pointer;
+        }
+
+        #spoiler {
+            display: none;
+        }
+
+        table {
+            font-family: Arial, sans-serif;
+            border: 1px solid;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #0066CC;
+            color: white;
+        }
+
+        td {
+            border: 1px solid;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lesson CRUD</h1>
+    <h3>Add Lesson</h3>
+    <p id="error-message" style="color: red"></p>
+    <form action="javascript:void(0);" method="POST" onsubmit="addLesson()">
+        <input type="text" id="add-title" placeholder="Lesson Title">
+        <input type="text" id="add-content" placeholder="Lesson Content">
+        <input type="text" id="add-author" placeholder="Lesson Author">
+        <input type="submit" value="Add">
+    </form>
+
+    <div id="spoiler">
+        <h3>Edit</h3>
+        <form class="my-form">
+            <input type="hidden" id="edit-id">
+            <input type="text" id="edit-title">
+            <input type="text" id="edit-content">
+            <input type="text" id="edit-author">
+            <input type="submit" value="Save">
+            <a onclick="closeInput()" aria-label="Close">&#10006;</a>
+        </form>
+    </div>
+
+    <h3>Featured Lessons (10+ Votes)</h3>
+    <p id="counter-featured"></p>
+
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Content</th>
+            <th>Author</th>
+            <th>Created On</th>
+            <th>Votes</th>
+        </tr>
+        <tbody id="featured-lessons"></tbody>
+    </table>
+
+    <hr />
+    <h3>All Lessons</h3>
+    <p id="counter"></p>
+
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Content</th>
+            <th>Author</th>
+            <th>Created On</th>
+            <th>Votes</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        <tbody id="lessons"></tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <script src="site.js"></script>
+</body>
+</html>
