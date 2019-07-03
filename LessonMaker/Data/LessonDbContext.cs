@@ -13,7 +13,7 @@ namespace LessonMaker.Data
     public class LessonDbContext : DbContext
     {
         private static LessonDbContext instance;
-        private static readonly String connectionString = "server=localhost;port=3306;database=bit350;user=root;password=mypassword";
+        private static readonly String connectionString = "server=jchsql;port=3306;database=bit350;user=james;password=Pa$$word";
 
         public DbSet<Lesson> Lessons { get; set; }
 

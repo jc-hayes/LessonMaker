@@ -29,14 +29,6 @@ namespace LessonsMaker
         {
             services.AddCors();
 
-            //var options = new DbContextOptionsBuilder<LessonDbContext>()
-            //                .UseMySQL(Configuration.GetConnectionString("DefaultConnection"))
-            //                .EnableSensitiveDataLogging()
-            //                .Options;
-            //services.AddSingleton(options);
-
-            //services.AddDbContext<LessonDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
-
             services.AddMvc();
 
         }   
