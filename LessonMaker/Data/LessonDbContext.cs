@@ -41,7 +41,7 @@ namespace LessonMaker.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySQL(GetConnectionString()).EnableSensitiveDataLogging();
+            //optionsBuilder.UseMySQL(GetConnectionString()).EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
